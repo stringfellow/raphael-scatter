@@ -7,6 +7,20 @@ scatterPlot.prototype.defaultClickFn = function(elem) {
     alert(elem.data('text'));
 };
 
+scatterPlot.prototype.defaultHoverInFn = function(elem) {
+    // provides a default hover function (show the text)
+    elem.data('hover',
+        this.r.text(
+            elem.getBBox().x,
+            elem.getBBox().y,
+            elem.data('text')));
+};
+
+scatterPlot.prototype.defaultHoverOutFn = function(elem) {
+    // provides a default hover function (hide the text)
+    elem.data('hover').remove();
+};
+
 scatterPlot.prototype.default_config = {
     size: 400,  // plot (i.e. plot area) height/width (square!)
     tick_size: 400 / 10,  //how far apart are the ticks?
@@ -22,7 +36,9 @@ scatterPlot.prototype.default_config = {
     ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  //ticks.. obv.
     x_label: "",  // x axis label
     y_label: "",  // y axis label
-    clickFn: scatterPlot.prototype.defaultClickFn  // click a point and...
+    clickFn: scatterPlot.prototype.defaultClickFn,  // click a point and...
+    hoverInFn: scatterPlot.prototype.defaultHoverInFn,  // click a point and...
+    hoverOutFn: scatterPlot.prototype.defaultHoverOutFn  // click a point and...
 };
 
 scatterPlot.prototype.getColours = function () {
@@ -136,7 +152,10 @@ scatterPlot.prototype.makeDots = function (data) {
         ticks = this.config.ticks,
         r = this.r,
         radius = this.config.radius,
-        clickFn = this.config.clickFn;
+        clickFn = this.config.clickFn,
+        hoverInFn = this.config.hoverInFn,
+        hoverOutFn = this.config.hoverOutFn,
+        self = this;
 
     // remove old ones...
     var len = this.points.length;
@@ -163,7 +182,10 @@ scatterPlot.prototype.makeDots = function (data) {
                 function() {
                     this.attr('stroke', '#333');
                 })
-            .click(function() { clickFn(this) });
+            .click(function() { clickFn(this) })
+            .hover(
+                function() {hoverInFn.call(self, this)},
+                function() {hoverOutFn.call(self, this)});
         this.points.push(dot);
     }
 };
