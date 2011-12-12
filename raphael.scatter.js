@@ -5,7 +5,7 @@
 
     scatterPlot.prototype.defaultClickFn = function(elem) {
         // provides a default click function (alert the text)
-        alert(elem.data('text'));
+        alert(elem.data('data')['text']);
     };
 
     scatterPlot.prototype.defaultHoverInFn = function(elem) {
@@ -13,11 +13,11 @@
         var x = elem.getBBox().x,
             y = elem.getBBox().y;
 
-        elem.attr('stroke', '#ccc');
+        elem.attr('stroke', '#ccc').toFront();
         var text = this.r.text(
                 elem.getBBox().x,
                 elem.getBBox().y - this.config.text_width,
-                elem.data('text'));
+                elem.data('data')['text']);
 
         if (x + text.getBBox().width < this.config.size) {
             text.attr('x',
@@ -213,7 +213,7 @@
                     size + text_width - (y * tick_size),
                     radius)
                     .attr('stroke', '#555')
-                    .data('text', t)
+                    .data('data', t)
                     .attr('fill', series_colours[count])
                     .click(function() { clickFn(this) })
                     .hover(
