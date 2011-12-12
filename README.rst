@@ -44,10 +44,10 @@ Usage
         "some-container-id",
         {
             'series1': [
-                [1, 2, "Point 1, series 1"]
+                [1, 2, {text: "Point 1, series 1"}]
             ],
             'series2': [
-                [3, 4, "Point 1, series 2"]
+                [3, 4, {text: "Point 1, series 2"}]
             ]
         });
 
