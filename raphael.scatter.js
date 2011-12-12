@@ -7,7 +7,7 @@ scatterPlot.prototype.defaultClickFn = function(elem) {
     alert(elem.data('text'));
 };
 
-var default_config = {
+scatterPlot.prototype.default_config = {
     size: 400,  // plot (i.e. plot area) height/width (square!)
     tick_size: 400 / 10,  //how far apart are the ticks?
     padding: 400 / 10,  // how much LHS/Bottom extra do we need for axes etc?
@@ -174,11 +174,11 @@ scatterPlot.prototype.init = function(config, element_id, data) {
 
     // update config with custom config
     this.config = {};
-    for (var key in default_config) {
+    for (var key in this.default_config) {
         if (config[key] !== undefined) {
             this.config[key] = config[key];
         } else {
-            this.config[key] = default_config[key];
+            this.config[key] = this.default_config[key];
         }
     }
 
