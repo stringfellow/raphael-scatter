@@ -9,16 +9,29 @@ scatterPlot.prototype.defaultClickFn = function(elem) {
 
 scatterPlot.prototype.defaultHoverInFn = function(elem) {
     // provides a default hover function (show the text)
-    elem.data('hover',
-        this.r.text(
+    var text = this.r.text(
             elem.getBBox().x,
-            elem.getBBox().y,
-            elem.data('text')));
+            elem.getBBox().y - this.config.text_width,
+            elem.data('text'));
+    text.attr('x', elem.getBBox().x + (text.getBBox().width / 2) - (this.config.text_width * 1.5));
+    elem.data('hover', [
+            this.r.rect(
+                elem.getBBox().x - (2 * this.config.text_width),
+                elem.getBBox().y - (2 * this.config.text_width),
+                text.getBBox().width + this.config.text_width,
+                text.getBBox().height + this.config.text_width
+            ).attr('fill', "#fff").attr('fill-opacity', 0.7),
+            text.toFront()
+        ]);
 };
 
 scatterPlot.prototype.defaultHoverOutFn = function(elem) {
     // provides a default hover function (hide the text)
-    elem.data('hover').remove();
+    var bits = elem.data('hover');
+    elem.data('hover', []);
+    for (var i = 0; i < bits.length; i++) {
+        bits[i].remove();
+    }
 };
 
 scatterPlot.prototype.default_config = {
@@ -207,7 +220,7 @@ scatterPlot.prototype.init = function(config, element_id, data) {
     var size = this.config.size,
         padding = this.config.padding;
 
-    this.r = Raphael(element_id, size + padding, size + padding);
+    this.r = Raphael(element_id, size + (2 * padding), size + padding);
     this.drawLabels();
     this.drawGrid();
     this.makeDots(data);
