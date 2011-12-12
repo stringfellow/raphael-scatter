@@ -24,6 +24,7 @@ Usage
     1. Include raphael-min.js
     2. Include raphael.scatter.js
     3. Make a new scatter plot, with optional overide config as first arg::
+
         var sp = new scatterPlot({
             size: 400,  // plot (i.e. plot area) height/width (square!)
             colours: [  // gradient colours
@@ -49,7 +50,9 @@ Usage
                 [3, 4, "Point 1, series 2"]
             ]
         });
+
     4. If you want to change the points::
+
         sp.makeDots({'series x': [...]});
 
 License
