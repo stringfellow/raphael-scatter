@@ -16,52 +16,26 @@
                 var loaderText = function (elem) {
                     $('#loader').html(elem.data('text'));
                 };
-                var data = [];
+                var data1 = [],
+                    data2 = [];
                 for (var dummy = 0; dummy <= 200; dummy++) {
-                    data.push([Math.floor(Math.random()*101)/10, Math.floor(Math.random()*101)/10, dummy]);
+                    data1.push([Math.floor(Math.random()*101)/10, Math.floor(Math.random()*101)/10, dummy]);
+                }
+                for (var dummy = 0; dummy <= 200; dummy++) {
+                    data2.push([Math.floor(Math.random()*101)/10, Math.floor(Math.random()*101)/10, dummy]);
                 }
                 sp2 = new scatterPlot({x_label: "X2 LABEL", clickFn: loaderText}, "holder2", []);
-                sp = new scatterPlot({x_label: "X LABEL"}, "holder", data);
+                sp = new scatterPlot({x_label: "X LABEL"}, "holder", {'I am a really long and annoying label': data1, 'DATA2': data2});
 
                 
             };
-
-
-            function makeDots(r, data) {
-                var len = points.length;
-                for (var i = 0; i < len; i++) {
-                    var point = points.pop()
-                    point.remove();
-                }
-                for (var di = 0; di < data.length; di++) {
-                    var datum = data[di];
-                    var x = datum[0];
-                    var y = datum[1];
-                    var t = datum[2];
-                    var dot = r.circle(
-                        padding - text_width + (x * tick_size),
-                        size + text_width - (y * tick_size),
-                        radius)
-                        .data('text', t)
-                        .attr('fill', '#000')
-                        .hover(
-                            function() {
-                                this.attr('stroke', '#999');
-                            },
-                            function() {
-                                this.attr('stroke', '#333');
-                            })
-                        .click(function() { clickFn(this) });
-                    points.push(dot);
-                }
-            }
 
             function testDots(count) {
                 var data = [];
                 for (var dummy = 0; dummy <= count; dummy++) {
                     data.push([Math.floor(Math.random()*101)/10, Math.floor(Math.random()*101)/10, dummy]);
                 }
-                sp2.makeDots(data); 
+                sp2.makeDots([data]); 
             }
         </script>
 	</head>

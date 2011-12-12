@@ -12,6 +12,7 @@ scatterPlot.prototype.defaultHoverInFn = function(elem) {
     var x = elem.getBBox().x,
         y = elem.getBBox().y;
 
+    elem.attr('stroke', '#ccc');
     var text = this.r.text(
             elem.getBBox().x,
             elem.getBBox().y - this.config.text_width,
@@ -43,6 +44,7 @@ scatterPlot.prototype.defaultHoverInFn = function(elem) {
 
 scatterPlot.prototype.defaultHoverOutFn = function(elem) {
     // provides a default hover function (hide the text)
+    elem.attr('stroke', '#333');
     var bits = elem.data('hover');
     elem.data('hover', []);
     for (var i = 0; i < bits.length; i++) {
@@ -62,6 +64,7 @@ scatterPlot.prototype.default_config = {
         ['#FFC80B', 62.5],
         ['#C1D72E', 100]
     ],
+    series_colours: ['#000', '#fff'],
     ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  //ticks.. obv.
     x_label: "",  // x axis label
     y_label: "",  // y axis label
@@ -174,6 +177,11 @@ scatterPlot.prototype.drawLabels = function() {
 
 scatterPlot.prototype.makeDots = function (data) {
     // update dots on plot (not massively efficient)
+    // data sould be a dict of list of lists:
+    // data = {
+    //  'series 1': [[x1,y1,t1],...],
+    //  ...
+    //}
     var text_width = this.config.text_width,
         padding = this.config.padding,
         size = this.config.size,
@@ -184,7 +192,8 @@ scatterPlot.prototype.makeDots = function (data) {
         clickFn = this.config.clickFn,
         hoverInFn = this.config.hoverInFn,
         hoverOutFn = this.config.hoverOutFn,
-        self = this;
+        self = this,
+        series_colours = this.config.series_colours;
 
     // remove old ones...
     var len = this.points.length;
@@ -193,31 +202,55 @@ scatterPlot.prototype.makeDots = function (data) {
         point.remove();
     }
     // add new ones...
-    for (var di = 0; di < data.length; di++) {
-        var datum = data[di];
-        var x = datum[0];
-        var y = datum[1];
-        var t = datum[2];
-        var dot = r.circle(
-            padding - text_width + (x * tick_size),
-            size + text_width - (y * tick_size),
-            radius)
-            .data('text', t)
-            .attr('fill', '#000')
-            .hover(
-                function() {
-                    this.attr('stroke', '#999');
-                },
-                function() {
-                    this.attr('stroke', '#333');
-                })
-            .click(function() { clickFn(this) })
-            .hover(
-                function() {hoverInFn.call(self, this)},
-                function() {hoverOutFn.call(self, this)});
-        this.points.push(dot);
+    var count = 0;
+    for (i in data) {
+        var series = data[i];
+        for (var j = 0; j < series.length; j++) {
+            var datum = series[j];
+            var x = datum[0];
+            var y = datum[1];
+            var t = datum[2];
+            var dot = r.circle(
+                padding - text_width + (x * tick_size),
+                size + text_width - (y * tick_size),
+                radius)
+                .attr('stroke', '#555')
+                .data('text', t)
+                .attr('fill', series_colours[count])
+                .click(function() { clickFn(this) })
+                .hover(
+                    function() {hoverInFn.call(self, this)},
+                    function() {hoverOutFn.call(self, this)});
+            this.points.push(dot);
+        }
+        count++;
     }
 };
+
+scatterPlot.prototype.showLegend = function(data) {
+    var text_width = this.config.text_width,
+        padding = this.config.padding,
+        size = this.config.size,
+        tick_size = this.config.tick_size,
+        ticks = this.config.ticks,
+        r = this.r,
+        radius = this.config.radius,
+        series_colours = this.config.series_colours;
+
+    var count = 0;
+    var last_rhs = 0;
+    for (key in data) {
+        var dot = r.circle(
+            last_rhs + padding + text_width,
+            size + (text_width * 4),
+            radius)
+            .attr('fill', series_colours[count]);
+        var text = r.text(dot.getBBox().x, dot.getBBox().y + radius, key);
+        text.attr('x', dot.getBBox().x + text.getBBox().width / 2 + (2 * radius) + text_width);
+        count++;
+        last_rhs = text.getBBox().x + text.getBBox().width + text_width;
+    }
+}
 
 scatterPlot.prototype.init = function(config, element_id, data) {
     var self = this;
@@ -233,11 +266,16 @@ scatterPlot.prototype.init = function(config, element_id, data) {
         }
     }
 
+    var _getLegendHeight = function() {
+        return self.config.text_width * 2;
+    }
+
     var size = this.config.size,
         padding = this.config.padding;
 
-    this.r = Raphael(element_id, size + (2 * padding), size + padding);
+    this.r = Raphael(element_id, size + (2 * padding), size + padding + _getLegendHeight());
     this.drawLabels();
     this.drawGrid();
+    this.showLegend(data);
     this.makeDots(data);
 };
