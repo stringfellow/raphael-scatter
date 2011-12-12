@@ -9,15 +9,31 @@ scatterPlot.prototype.defaultClickFn = function(elem) {
 
 scatterPlot.prototype.defaultHoverInFn = function(elem) {
     // provides a default hover function (show the text)
+    var x = elem.getBBox().x,
+        y = elem.getBBox().y;
+
     var text = this.r.text(
             elem.getBBox().x,
             elem.getBBox().y - this.config.text_width,
             elem.data('text'));
-    text.attr('x', elem.getBBox().x + (text.getBBox().width / 2) - (this.config.text_width * 1.5));
+
+    if (x + text.getBBox().width < this.config.size) {
+        text.attr('x',
+            elem.getBBox().x + (text.getBBox().width / 2) - (this.config.text_width * 1));
+    } else {
+        text.attr('x',
+            elem.getBBox().x - (text.getBBox().width / 2) + (this.config.text_width * 1));
+    }
+
+    if (y - text.getBBox().height - (this.config.text_width / 2) < 0) {
+        text.attr('y',
+            elem.getBBox().y + this.config.text_width + (2 * this.config.radius));
+    }
+
     elem.data('hover', [
             this.r.rect(
-                elem.getBBox().x - (2 * this.config.text_width),
-                elem.getBBox().y - (2 * this.config.text_width),
+                text.getBBox().x - (this.config.text_width / 2),
+                text.getBBox().y - (this.config.text_width / 2),
                 text.getBBox().width + this.config.text_width,
                 text.getBBox().height + this.config.text_width
             ).attr('fill', "#fff").attr('fill-opacity', 0.7),
