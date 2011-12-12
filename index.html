@@ -20,8 +20,8 @@
                 for (var dummy = 0; dummy <= 200; dummy++) {
                     data.push([Math.floor(Math.random()*101)/10, Math.floor(Math.random()*101)/10, dummy]);
                 }
-                sp = new scatterPlot({x_label: "X LABEL"}, "holder", data);
                 sp2 = new scatterPlot({x_label: "X2 LABEL", clickFn: loaderText}, "holder2", []);
+                sp = new scatterPlot({x_label: "X LABEL"}, "holder", data);
 
                 
             };
