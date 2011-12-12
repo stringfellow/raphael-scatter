@@ -3,29 +3,30 @@ var scatterPlot = function(config, element_id, data) {
 };
 
 scatterPlot.prototype.defaultClickFn = function(elem) {
+    // provides a default click function (alert the text)
     alert(elem.data('text'));
 };
 
-
 scatterPlot.prototype.config = {
-    size: 400,
-    tick_size: 400 / 10,
-    padding: 400 / 10,
-    radius: 400 / 100,
-    text_width: 40 / 4,
-    colours: [
+    size: 400,  // plot (i.e. plot area) height/width (square!)
+    tick_size: 400 / 10,  //how far apart are the ticks?
+    padding: 400 / 10,  // how much LHS/Bottom extra do we need for axes etc?
+    radius: 400 / 100,  // the dot size
+    text_width: 40 / 4,  //hm, bit rough, but really height/width of chars.
+    colours: [  // gradient colours
         ['#CF171F', 0],
         ['#F47721', 37.5],
         ['#FFC80B', 62.5],
         ['#C1D72E', 100]
     ],
-    ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    x_label: "",
-    y_label: "",
-    clickFn: scatterPlot.prototype.defaultClickFn
+    ticks: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],  //ticks.. obv.
+    x_label: "",  // x axis label
+    y_label: "",  // y axis label
+    clickFn: scatterPlot.prototype.defaultClickFn  // click a point and...
 };
 
 scatterPlot.prototype.getColours = function () {
+    // converts our list to an SVG gradient string
     var result = "45-";
     var colours = this.config.colours;
     for (var ci = 0; ci < colours.length; ci++) {
@@ -45,6 +46,7 @@ scatterPlot.prototype.getColours = function () {
 };
 
 scatterPlot.prototype.drawGrid = function() {
+    // output the gradient and the lines
     var text_width = this.config.text_width,
         padding = this.config.padding,
         size = this.config.size,
@@ -64,6 +66,7 @@ scatterPlot.prototype.drawGrid = function() {
         "L" + (vpad) + "," + (text_width)  // line to right
     );
 
+    // draw the tick lines
     for (var li in ticks) {
         var line = r.path(
             "M" + (vpad) + "," + (text_width + (tick_size * li)) + 
@@ -77,6 +80,7 @@ scatterPlot.prototype.drawGrid = function() {
 };
 
 scatterPlot.prototype.drawLabels = function() {
+    // add x, y axis labels and tick labels
     var text_width = this.config.text_width,
         padding = this.config.padding,
         size = this.config.size,
@@ -123,8 +127,8 @@ scatterPlot.prototype.drawLabels = function() {
     yl.rotate(-90);
 };
 
-
 scatterPlot.prototype.makeDots = function (data) {
+    // update dots on plot (not massively efficient)
     var text_width = this.config.text_width,
         padding = this.config.padding,
         size = this.config.size,
@@ -134,12 +138,13 @@ scatterPlot.prototype.makeDots = function (data) {
         radius = this.config.radius,
         clickFn = this.config.clickFn;
 
+    // remove old ones...
     var len = this.points.length;
     for (var i = 0; i < len; i++) {
         var point = this.points.pop()
         point.remove();
     }
-
+    // add new ones...
     for (var di = 0; di < data.length; di++) {
         var datum = data[di];
         var x = datum[0];
@@ -163,10 +168,11 @@ scatterPlot.prototype.makeDots = function (data) {
     }
 };
 
-
 scatterPlot.prototype.init = function(config, element_id, data) {
     var self = this;
     this.points = [];
+
+    // update config with custom config
     for (var key in config) {
         this.config[key] = config[key];
     }
