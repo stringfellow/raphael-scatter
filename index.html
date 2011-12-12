@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="OUTPUT_ENCODING" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" 
+			content="text/html; charset=OUTPUT_ENCODING" />
+            <script type="text/javascript" src="jquery-1.6.2.min.js"></script>
+            <script type="text/javascript" src="raphael-min.js"></script>
+            <script type="text/javascript" src="raphael.scatter.js"></script>
+            <script>
+                var sp, sp2;
+
+            window.onload = function () {
+                var loaderText = function (elem) {
+                    $('#loader').html(elem.data('text'));
+                };
+                var data = [];
+                for (var dummy = 0; dummy <= 200; dummy++) {
+                    data.push([Math.floor(Math.random()*101)/10, Math.floor(Math.random()*101)/10, dummy]);
+                }
+                sp = new scatterPlot({x_label: "X LABEL"}, "holder", data);
+                sp2 = new scatterPlot({x_label: "X2 LABEL", clickFn: loaderText}, "holder2", []);
+
+                
+            };
+
+
+            function makeDots(r, data) {
+                var len = points.length;
+                for (var i = 0; i < len; i++) {
+                    var point = points.pop()
+                    point.remove();
+                }
+                for (var di = 0; di < data.length; di++) {
+                    var datum = data[di];
+                    var x = datum[0];
+                    var y = datum[1];
+                    var t = datum[2];
+                    var dot = r.circle(
+                        padding - text_width + (x * tick_size),
+                        size + text_width - (y * tick_size),
+                        radius)
+                        .data('text', t)
+                        .attr('fill', '#000')
+                        .hover(
+                            function() {
+                                this.attr('stroke', '#999');
+                            },
+                            function() {
+                                this.attr('stroke', '#333');
+                            })
+                        .click(function() { clickFn(this) });
+                    points.push(dot);
+                }
+            }
+
+            function testDots(count) {
+                var data = [];
+                for (var dummy = 0; dummy <= count; dummy++) {
+                    data.push([Math.floor(Math.random()*101)/10, Math.floor(Math.random()*101)/10, dummy]);
+                }
+                sp2.makeDots(data); 
+            }
+        </script>
+	</head>
+	<body>
+    <div id="holder"></div>
+    <div id="holder2"></div>
+    <div id="loader"></div>
+    <button onclick="testDots($('#dotcount').val())";>Test</button><input id="dotcount" value="200"></input>
+	</body>
+</html>
+
+
